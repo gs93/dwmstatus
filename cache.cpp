@@ -4,6 +4,10 @@ cache::cache()
 {
 }
 
+cache::~cache()
+{
+}
+
 void cache::add(statusfunc_t *f, unsigned int calls)
 {
     _cacheFunc tmp;
