@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <X11/Xlib.h>
 
+#include "cache.hpp"
+
 using namespace std;
 
 vector<string> &_split(const string &s, char delim, vector<string> &elems);
@@ -50,11 +52,11 @@ void setStatus(const string &status) // {{{
     XSync(dpy, False);
 } // }}}
 
-string getLoad()
+string getLoad() // {{{
 {
     vector<string> loads = _split(_getFileContent("/proc/loadavg"));
     return loads[0] + " " + loads[1] + " " + loads[2];
-}
+} // }}}
 
 int main(int argc, const char *argv[])
 {
@@ -62,9 +64,12 @@ int main(int argc, const char *argv[])
         cerr << "dwmstatus: cannot open display." << endl;
         return 1;
     }
-    
+
+    cache c;
+    c.add(getLoad, 60);
+
     while (true) {
-        setStatus(getLoad());
+        c.execute();
         sleep(1);
     }
     
