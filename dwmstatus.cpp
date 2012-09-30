@@ -16,7 +16,9 @@ vector<string> _split(const string &s, char delim);
 string _getFileContent(string path);
 
 void setStatus(const string &status);
+string getTime();
 string getLoad();
+string getNowPlaying();
 
 static Display *dpy;
 
@@ -52,10 +54,28 @@ void setStatus(const string &status) // {{{
     XSync(dpy, False);
 } // }}}
 
+string getTime() // {{{
+{
+    time_t rawtime;
+    struct tm * timeinfo;
+    char buffer[10];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, 10, "%H:%M:%S",timeinfo);
+    return buffer;
+} // }}}
+
 string getLoad() // {{{
 {
     vector<string> loads = _split(_getFileContent("/proc/loadavg"));
     return loads[0] + " " + loads[1] + " " + loads[2];
+} // }}}
+
+string getNowPlaying() // {{{
+{
+    // ncmpcpp --now-playing "{{%15a - }{%32t}}|{%50f}"
 } // }}}
 
 int main(int argc, const char *argv[])
@@ -66,10 +86,13 @@ int main(int argc, const char *argv[])
     }
 
     cache c;
-    c.add(getLoad, 60);
+    c.add(getLoad, 30);
+    // getNowPlaying, getUpdates, getBattery, getMem, getCpuTemp, getCpu
+    c.add(getTime, 1);
 
     while (true) {
-        c.execute();
+        //setStatus(c.get(getLoad) + " " + c.get(getTime));
+        setStatus(c.execute());
         sleep(1);
     }
     

@@ -18,7 +18,17 @@ void cache::add(statusfunc_t *f, unsigned int calls)
     functions.push_back(tmp);
 }
 
-void cache::execute()
+string cache::execute()
 {
-    // TODO: write this..^^
+    string ret = "";
+    for (auto it = functions.begin(); it < functions.end(); it++) {
+        if ((*it).lastCall % (*it).calls == 0) {
+            (*it).lastResult = (*it).func();
+            (*it).lastCall = 0;
+        }
+        ret += (*it).lastResult;
+        if (it < functions.end() - 1) ret += " ";
+        (*it).lastCall++;
+    }
+    return ret;
 }

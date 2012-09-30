@@ -9,7 +9,7 @@ class cache {
 public:
     cache();
     void add(statusfunc_t *f, unsigned int calls);
-    void execute();
+    string execute();
     virtual ~cache();
 private:
     struct _cacheFunc {
