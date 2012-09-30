@@ -11,3 +11,7 @@ informations:
 
     example:
     0.37 0.18 0.09 [Die Apo..Reiter - Auferstehen soll in Herrlichkeit] 0+2 54%  534M 42°  4% 14:55:32
+
+cache:
+    - string cache(statusfunc_t *f, unsignet int cacheTime);
+    - typedef string statusfunc_t();
