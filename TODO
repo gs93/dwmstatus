@@ -1,3 +1,6 @@
+valgrind
+    valgrind --leak-check=full ./dwmstatus
+
 informations (information namespace):
     - time (%H:%M:%S)
     - CPU utilization (reserve 2 digits)
