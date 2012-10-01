@@ -1,3 +1,6 @@
+#ifndef __CACHE_HPP__
+#define __CACHE_HPP__
+
 #include <string>
 #include <map>
 
@@ -21,3 +24,4 @@ private:
     };
     map<statusfunc_t *, _cacheFunction_t> _functions;
 };
+#endif
