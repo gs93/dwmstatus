@@ -116,7 +116,7 @@ int main(int argc, const char *argv[])
     c.add(getLoad, 30);
     c.add(getNowPlaying, 20);
     c.add(getUpdates, 60*60*2);
-    // getNowPlaying, getUpdates, getBattery, getMem, getCpuTemp, getCpu
+    // getBattery, getMem, getCpuTemp, getCpu
     c.add(getTime, 1);
 
     while (true) {
