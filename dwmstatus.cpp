@@ -5,6 +5,7 @@
 #include <fstream>
 #include <streambuf>
 #include <unistd.h>
+#include <cstdio>
 #include <X11/Xlib.h>
 
 #include "cache.hpp"
@@ -46,6 +47,25 @@ string _getFileContent(string path)
     t.close();
     return str;
 }
+
+string _getCommandOutput(string cmd, bool removeLastChar = false) // {{{2
+{
+    FILE *in;
+    char buff[512];
+    string ret;
+
+    if(!(in = popen(cmd.c_str(), "r"))) {
+        cerr << "_getCommandOutput: could'nt get output from " << cmd << endl;
+        return "error";
+    }
+
+    while(fgets(buff, sizeof(buff), in)!=NULL){
+        ret += buff;
+    }
+    pclose(in);
+    if (removeLastChar) ret = ret.substr(0, ret.length() - 1);
+    return ret;
+} // 2}}}
 // 1}}}
 
 void setStatus(const string &status) // {{{
@@ -75,7 +95,14 @@ string getLoad() // {{{
 
 string getNowPlaying() // {{{
 {
-    // ncmpcpp --now-playing "{{%15a - }{%32t}}|{%50f}"
+    // XXX: cut if it's to long
+    return _getCommandOutput("mpc -f \"%title%\" current", true);
+} // }}}
+
+string getUpdates() // {{{
+{
+    string aur = _getCommandOutput("<$XDG_CACHE_HOME/sah wc -l", true);
+    return (_getCommandOutput("pacman -Qqu | wc -l", true) + (aur != "0" ? "+" + aur : ""));
 } // }}}
 
 int main(int argc, const char *argv[])
@@ -87,11 +114,13 @@ int main(int argc, const char *argv[])
 
     cache c;
     c.add(getLoad, 30);
+    c.add(getNowPlaying, 20);
+    c.add(getUpdates, 60*60*2);
     // getNowPlaying, getUpdates, getBattery, getMem, getCpuTemp, getCpu
     c.add(getTime, 1);
 
     while (true) {
-        setStatus(c.get(getLoad) + " " + c.get(getTime));
+        setStatus(c.get(getLoad) + " [" + c.get(getNowPlaying) + "] " + c.get(getUpdates) + " " + c.get(getTime));
         sleep(1);
     }
     
