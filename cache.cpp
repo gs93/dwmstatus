@@ -19,12 +19,21 @@ void cache::add(statusfunc_t *function, unsigned int calls)
 string cache::get(statusfunc_t *function)
 {
     auto it = _functions.find(function);
-    _cacheFunction_t tmp = (*it).second;
-    if (tmp.lastCall % tmp.calls == 0) {
-        tmp.lastResult = ((*it).first)();
-        tmp.lastCall = 0;
+    _cacheFunction_t *tmp = &((*it).second);
+    if (tmp->lastCall % tmp->calls == 0) {
+        tmp->returnValue = ((*it).first)();
+        tmp->lastCall = 0;
     }
-    tmp.lastCall++;
-    _functions[function] = tmp; // write changes back
-    return tmp.lastResult;
+    tmp->lastCall++;
+    return tmp->returnValue;
+}
+
+bool cache::remove(statusfunc_t *function)
+{
+    auto it = _functions.find(function);
+    if (it != _functions.end()) {
+        _functions.erase(it);
+        return true;
+    }
+    return false;
 }
