@@ -8,27 +8,23 @@ cache::~cache()
 {
 }
 
-void cache::add(statusfunc_t *f, unsigned int calls)
+void cache::add(statusfunc_t *function, unsigned int calls)
 {
-    _cacheFunc tmp;
-    tmp.func = f;
+    _cacheFunction_t tmp;
     tmp.calls = calls;
-    tmp.lastCall = 1;
-    tmp.lastResult = f();
-    functions.push_back(tmp);
+    tmp.lastCall = 0;
+    _functions.insert(pair<statusfunc_t *, _cacheFunction_t>(function, tmp));
 }
 
-string cache::execute()
+string cache::get(statusfunc_t *function)
 {
-    string ret = "";
-    for (auto it = functions.begin(); it < functions.end(); it++) {
-        if ((*it).lastCall % (*it).calls == 0) {
-            (*it).lastResult = (*it).func();
-            (*it).lastCall = 0;
-        }
-        ret += (*it).lastResult;
-        if (it < functions.end() - 1) ret += " ";
-        (*it).lastCall++;
+    auto it = _functions.find(function);
+    _cacheFunction_t tmp = (*it).second;
+    if (tmp.lastCall % tmp.calls == 0) {
+        tmp.lastResult = ((*it).first)();
+        tmp.lastCall = 0;
     }
-    return ret;
+    tmp.lastCall++;
+    _functions[function] = tmp; // write changes back
+    return tmp.lastResult;
 }

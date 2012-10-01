@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -8,15 +9,15 @@ typedef string statusfunc_t();
 class cache {
 public:
     cache();
-    void add(statusfunc_t *f, unsigned int calls);
-    string execute();
+    void add(statusfunc_t *function, unsigned int calls);
+    string get(statusfunc_t *function);
     virtual ~cache();
+
 private:
-    struct _cacheFunc {
-        statusfunc_t *func;
+    struct _cacheFunction_t {
         unsigned int calls;
         unsigned int lastCall;
         string lastResult;
     };
-    vector<_cacheFunc> functions;
+    map<statusfunc_t *, _cacheFunction_t> _functions;
 };

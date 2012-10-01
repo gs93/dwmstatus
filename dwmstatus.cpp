@@ -91,8 +91,7 @@ int main(int argc, const char *argv[])
     c.add(getTime, 1);
 
     while (true) {
-        //setStatus(c.get(getLoad) + " " + c.get(getTime));
-        setStatus(c.execute());
+        setStatus(c.get(getLoad) + " " + c.get(getTime));
         sleep(1);
     }
     
