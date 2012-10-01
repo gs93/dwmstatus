@@ -1,6 +1,9 @@
 valgrind
     valgrind --leak-check=full ./dwmstatus
 
+signalhandling
+    - SIGUSR1: refresh all caches
+
 informations (information namespace):
     - time (%H:%M:%S)
     - CPU utilization (reserve 2 digits)
