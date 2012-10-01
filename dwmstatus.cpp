@@ -95,8 +95,10 @@ string getLoad() // {{{
 
 string getNowPlaying() // {{{
 {
-    // XXX: cut if it's to long
-    return _getCommandOutput("mpc -f \"%title%\" current", true);
+    string np = _getCommandOutput("mpc -f \"%title%\" current", true);
+    if (np.length() > 22)
+        np = np.substr(0, 22).append("..");
+    return np;
 } // }}}
 
 string getUpdates() // {{{
@@ -104,6 +106,18 @@ string getUpdates() // {{{
     string aur = _getCommandOutput("<$XDG_CACHE_HOME/sah wc -l", true);
     return (_getCommandOutput("pacman -Qqu | wc -l", true) + (aur != "0" ? "+" + aur : ""));
 } // }}}
+
+// getCpuTemp {{{
+unsigned int _getCoreTemp(unsigned int core)
+{
+    return stoul(_getFileContent("/sys/devices/platform/coretemp.0/temp" + to_string(core) + "_input")) / 1000;
+}
+
+string getCpuTemp()
+{
+    return to_string((_getCoreTemp(2) + _getCoreTemp(4)) / 2) + "°";
+}
+// }}}
 
 int main(int argc, const char *argv[])
 {
@@ -113,14 +127,16 @@ int main(int argc, const char *argv[])
     }
 
     cache c;
-    c.add(getLoad, 30);
-    c.add(getNowPlaying, 20);
-    c.add(getUpdates, 60*60*2);
-    // getBattery, getMem, getCpuTemp, getCpu
+    c.add(getLoad, 31);
+    c.add(getNowPlaying, 17);
+    c.add(getUpdates, 60*60);
+    // getBattery(97), getMem(23)
+    c.add(getCpuTemp, 5);
+    // getCpu(1)
     c.add(getTime, 1);
 
     while (true) {
-        setStatus(c.get(getLoad) + " [" + c.get(getNowPlaying) + "] " + c.get(getUpdates) + " " + c.get(getTime));
+        setStatus(c.get(getLoad) + " [" + c.get(getNowPlaying) + "] " + c.get(getUpdates) + " " + c.get(getCpuTemp)  + " " + c.get(getTime));
         sleep(1);
     }
     
