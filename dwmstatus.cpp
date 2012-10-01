@@ -156,10 +156,13 @@ int main(int argc, const char *argv[])
     c.add(getCpuTemp, 5);
     // getCpu(1)
     c.add(getTime, 1);
-
+    
+    string bat;
     while (true) {
+        bat = c.get(getBattery);
         setStatus(c.get(getLoad) + " [" + c.get(getNowPlaying) + "] " + c.get(getUpdates) + " " + 
-                c.get(getBattery) + " " + c.get(getCpuTemp)  + " " + c.get(getTime));
+                (!bat.empty() ? bat + " " : "") + 
+                c.get(getCpuTemp)  + " " + c.get(getTime));
         sleep(1);
     }
     
