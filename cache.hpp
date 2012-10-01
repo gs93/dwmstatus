@@ -9,7 +9,7 @@ class cache {
 public:
     cache();
     void add(statusfunc_t *function, unsigned int calls);
-    string get(statusfunc_t *function);
+    string get(statusfunc_t *function, bool forceCall = false);
     bool remove(statusfunc_t *function);
     virtual ~cache();
 
