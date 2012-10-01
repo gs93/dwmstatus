@@ -26,7 +26,7 @@ options:
 	@echo "CXX        = ${CXX}"
 
 clean:
-	rm -f ${NAME} ${OBJ} ${NAME}-${VERSION}.tar.gz
+	rm -f ${NAME} *.o ${NAME}-${VERSION}.tar.gz
 
 dist: clean
 	@echo creating dist tarball
