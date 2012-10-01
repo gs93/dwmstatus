@@ -7,11 +7,8 @@ signalhandling
 informations (information namespace):
     - time (%H:%M:%S)
     - CPU utilization (reserve 2 digits)
-    - CPU temp (average of all cores)
     - MEM used (reserve 4 digits)
     - battery (only if present, reserve 2 digits)
-    - updates (only if >0, sah integration), "2+1"
-    - mpd: "[Artist - Track]", `ncmpcpp --now-playing "{{%15a - }{%32t}}|{%50f}"` (reserve 50 chars?)
 
     example:
-    0.37 0.18 0.09 [Die Apo..Reiter - Auferstehen soll in Herrlichkeit] 0+2 54%  534M 42°  4% 14:55:32
+    0.37 0.18 0.09 [Des kleinen Herzens le..] 0+2 54%  534M 42°  4% 14:55:32
