@@ -107,6 +107,27 @@ string getUpdates() // {{{
     return (_getCommandOutput("pacman -Qqu | wc -l", true) + (aur != "0" ? "+" + aur : ""));
 } // }}}
 
+string getBattery() // {{{
+{
+    string bat = "/sys/class/power_supply/BAT0";
+    if (_getFileContent(bat + "/present").substr(0, 1) == "1") { // is present
+        // get the status (Charging, Discharging, ...)
+        string status = _getFileContent(bat + "/status");
+        status = status.substr(0, status.length() - 1);
+        string prefix = " ";
+        if(status == "Discharging")
+            prefix = "-";
+        else if (status == "Charging")
+            prefix = "+";
+        else if (status == "Full")
+            prefix = "";
+
+        unsigned int percent = (stoul(_getFileContent(bat + "/charge_now")) / stoul(_getFileContent(bat + "/charge_full")) * 100);
+        return prefix + to_string(percent) + "%";
+    }
+    return "";
+} // }}}
+
 // getCpuTemp {{{
 unsigned int _getCoreTemp(unsigned int core)
 {
@@ -130,13 +151,15 @@ int main(int argc, const char *argv[])
     c.add(getLoad, 31);
     c.add(getNowPlaying, 17);
     c.add(getUpdates, 60*60);
-    // getBattery(97), getMem(23)
+    c.add(getBattery, 97);
+    // getMem(23)
     c.add(getCpuTemp, 5);
     // getCpu(1)
     c.add(getTime, 1);
 
     while (true) {
-        setStatus(c.get(getLoad) + " [" + c.get(getNowPlaying) + "] " + c.get(getUpdates) + " " + c.get(getCpuTemp)  + " " + c.get(getTime));
+        setStatus(c.get(getLoad) + " [" + c.get(getNowPlaying) + "] " + c.get(getUpdates) + " " + 
+                c.get(getBattery) + " " + c.get(getCpuTemp)  + " " + c.get(getTime));
         sleep(1);
     }
     
