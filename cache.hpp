@@ -13,6 +13,7 @@ public:
     cache();
     void add(statusfunc_t *function, unsigned int calls);
     string get(statusfunc_t *function, bool forceCall = false);
+    void refresh(statusfunc_t *function);
     bool remove(statusfunc_t *function);
     virtual ~cache();
 

@@ -28,6 +28,12 @@ string cache::get(statusfunc_t *function, bool forceCall)
     return tmp->returnValue;
 }
 
+void cache::refresh(statusfunc_t *function)
+{
+    auto it = _functions.find(function);
+    (*it).second.lastCall = 0;
+}
+
 bool cache::remove(statusfunc_t *function)
 {
     auto it = _functions.find(function);
