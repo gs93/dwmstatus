@@ -121,8 +121,8 @@ string getBattery() // {{{
             prefix = "+";
         else if (status == "Full")
             prefix = "";
-
-        unsigned int percent = (stoul(_getFileContent(bat + "/charge_now")) / stoul(_getFileContent(bat + "/charge_full")) * 100);
+        
+        unsigned int percent = (stof(_getFileContent(bat + "/charge_now")) / stof(_getFileContent(bat + "/charge_full")) * 100);
         return prefix + to_string(percent) + "%";
     }
     return "";
