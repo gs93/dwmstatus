@@ -12,14 +12,18 @@
 
 using namespace std;
 
-vector<string> &_split(const string &s, char delim, vector<string> &elems);
-vector<string> _split(const string &s, char delim);
-string _getFileContent(string path);
-
-void setStatus(const string &status);
-string getTime();
-string getLoad();
-string getNowPlaying();
+#define INTERVAL                1
+#define TIME_FORMAT             "%H:%M:%S"
+#define TIME_BUFFER             10
+#define LOADAVG                 "/proc/loadavg"
+#define BATTERY_PRESENT         "/sys/class/power_supply/BAT0/present"
+#define BATTERY_STATUS          "/sys/class/power_supply/BAT0/status"
+#define BATTERY_NOW             "/sys/class/power_supply/BAT0/charge_now"
+#define BATTERY_FULL            "/sys/class/power_supply/BAT0/charge_full"
+#define NOWPLAYING_COMMAND      "mpc -f %title% current"
+#define NOWPLAYING_MAX_LENGTH   20
+#define UPDATE_COMMAND          "pacman -Qqu | wc -l"
+//#define UPDATE_NO_SAH         // disable sah integration
 
 static Display *dpy;
 
@@ -78,41 +82,44 @@ string getTime() // {{{
 {
     time_t rawtime;
     struct tm * timeinfo;
-    char buffer[10];
+    char buffer[TIME_BUFFER];
 
     time(&rawtime);
     timeinfo = localtime(&rawtime);
 
-    strftime(buffer, 10, "%H:%M:%S",timeinfo);
+    strftime(buffer, TIME_BUFFER, TIME_FORMAT, timeinfo);
     return buffer;
 } // }}}
 
 string getLoad() // {{{
 {
-    vector<string> loads = _split(_getFileContent("/proc/loadavg"));
+    vector<string> loads = _split(_getFileContent(LOADAVG));
     return loads[0] + " " + loads[1] + " " + loads[2];
 } // }}}
 
 string getNowPlaying() // {{{
 {
-    string np = _getCommandOutput("mpc -f \"%title%\" current", true);
-    if (np.length() > 22)
-        np = np.substr(0, 22).append("..");
+    string np = _getCommandOutput(NOWPLAYING_COMMAND, true);
+    if (np.length() > NOWPLAYING_MAX_LENGTH + 2)
+        np = np.substr(0, NOWPLAYING_MAX_LENGTH).append("..");
     return np;
 } // }}}
 
 string getUpdates() // {{{
 {
-    string aur = _getCommandOutput("<$XDG_CACHE_HOME/sah wc -l", true);
-    return (_getCommandOutput("pacman -Qqu | wc -l", true) + (aur != "0" ? "+" + aur : ""));
+    #ifndef UPDATE_NO_SAH
+        string aur = _getCommandOutput("<$XDG_CACHE_HOME/sah wc -l", true);
+        return (_getCommandOutput(UPDATE_COMMAND, true) + (aur != "0" ? "+" + aur : ""));
+    #else
+        return (_getCommandOutput(UPDATE_COMMAND, true);
+    #endif
 } // }}}
 
 string getBattery() // {{{
 {
-    string bat = "/sys/class/power_supply/BAT0";
-    if (_getFileContent(bat + "/present").substr(0, 1) == "1") { // is present
+    if (_getFileContent(BATTERY_PRESENT).substr(0, 1) == "1") { // is present
         // get the status (Charging, Discharging, ...)
-        string status = _getFileContent(bat + "/status");
+        string status = _getFileContent(BATTERY_STATUS);
         status = status.substr(0, status.length() - 1);
         string prefix = " ";
         if(status == "Discharging")
@@ -122,7 +129,7 @@ string getBattery() // {{{
         else if (status == "Full")
             prefix = "";
         
-        unsigned int percent = (stof(_getFileContent(bat + "/charge_now")) / stof(_getFileContent(bat + "/charge_full")) * 100);
+        unsigned int percent = (stof(_getFileContent(BATTERY_NOW)) / stof(_getFileContent(BATTERY_FULL)) * 100);
         return prefix + to_string(percent) + "%";
     }
     return "";
@@ -163,7 +170,7 @@ int main(int argc, const char *argv[])
         setStatus(c.get(getLoad) + " [" + c.get(getNowPlaying) + "] " + c.get(getUpdates) + " " + 
                 (!bat.empty() ? bat + " " : "") + 
                 c.get(getCpuTemp)  + " " + c.get(getTime));
-        sleep(1);
+        sleep(INTERVAL);
     }
     
     XCloseDisplay(dpy);
