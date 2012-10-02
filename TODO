@@ -5,10 +5,9 @@ signalhandling
     - SIGUSR1: refresh all caches
 
 informations (information namespace):
-    - time (%H:%M:%S)
     - CPU utilization (reserve 2 digits)
     - MEM used (reserve 4 digits)
-    - battery (only if present, reserve 2 digits)
+    - nowplaying: check for errors
 
     example:
     0.37 0.18 0.09 [Des kleinen Herzens le..] 0+2 54%  534M 42°  4% 14:55:32
