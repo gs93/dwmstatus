@@ -2,7 +2,8 @@ valgrind
     valgrind --leak-check=full ./dwmstatus
 
 signalhandling
-    - SIGUSR1: refresh all caches
+    - SIGUSR1: refresh nowplaying
+    - SIGUSR2: refresh updates
 
 informations (information namespace):
     - CPU utilization (reserve 2 digits)
