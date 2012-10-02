@@ -6,7 +6,6 @@ signalhandling
 
 informations (information namespace):
     - CPU utilization (reserve 2 digits)
-    - MEM used (reserve 4 digits)
     - nowplaying: check for errors
 
     example:

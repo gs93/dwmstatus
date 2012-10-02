@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include <sstream>
 #include <fstream>
 #include <streambuf>
@@ -15,6 +16,7 @@ using namespace std;
 #define INTERVAL                1
 #define TIME_FORMAT             "%H:%M:%S"
 #define TIME_BUFFER             10
+#define MEM                     "/proc/meminfo"
 #define LOADAVG                 "/proc/loadavg"
 #define BATTERY_PRESENT         "/sys/class/power_supply/BAT0/present"
 #define BATTERY_STATUS          "/sys/class/power_supply/BAT0/status"
@@ -135,6 +137,16 @@ string getBattery() // {{{
     return "";
 } // }}}
 
+string getMem() // {{{
+{
+    float total, free, buff, cache;
+    FILE *infile = fopen(MEM, "r");
+    fscanf(infile,"MemTotal: %f kB\nMemFree: %f kB\nBuffers: %f kB\nCached: %f kB\n", &total, &free, &buff, &cache);
+    fclose(infile);
+    return to_string(lround((total - (free + buff + cache)) / 1024)) + "M";
+}
+// }}}
+
 // getCpuTemp {{{
 unsigned int _getCoreTemp(unsigned int core)
 {
@@ -159,7 +171,7 @@ int main(int argc, const char *argv[])
     c.add(getNowPlaying, 17);
     c.add(getUpdates, 60*60);
     c.add(getBattery, 97);
-    // getMem(23)
+    c.add(getMem, 23);
     c.add(getCpuTemp, 5);
     // getCpu(1)
     c.add(getTime, 1);
@@ -169,7 +181,7 @@ int main(int argc, const char *argv[])
         bat = c.get(getBattery);
         setStatus(c.get(getLoad) + " [" + c.get(getNowPlaying) + "] " + c.get(getUpdates) + " " + 
                 (!bat.empty() ? bat + " " : "") + 
-                c.get(getCpuTemp)  + " " + c.get(getTime));
+                c.get(getMem) + " " + c.get(getCpuTemp) + " " + c.get(getTime));
         sleep(INTERVAL);
     }
     
