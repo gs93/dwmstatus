@@ -213,7 +213,7 @@ int main(int argc, const char *argv[])
     c.add(getBattery, 97);
     c.add(getMem, 23);
     c.add(getCpuTemp, 5);
-    c.add(getCpu, 1);
+    c.add(getCpu, 2);
     c.add(getTime, 1);
 
     string bat;

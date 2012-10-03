@@ -1,8 +1,10 @@
 valgrind
     valgrind --leak-check=full ./dwmstatus
+    valgrind --tool=cachegrind --branch-sim=yes --track-fds=yes ./dwmstatus
+    valgrind --tool=massif ./dwmstatus
 
-informations (information namespace):
+informations:
     - nowplaying: check for errors
 
     example:
-    0.37 0.18 0.09 [Des kleinen Herzens le..] 0+2 54%  534M 42°  4% 14:55:32
+    0.37 0.18 0.09 [Des kleinen Herzens le..] 0+2 54% 534M 42°  4% 14:55:32
