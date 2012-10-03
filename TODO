@@ -6,7 +6,6 @@ signalhandling
     - SIGUSR2: refresh updates
 
 informations (information namespace):
-    - CPU utilization (reserve 2 digits)
     - nowplaying: check for errors
 
     example:

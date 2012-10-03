@@ -16,6 +16,7 @@ using namespace std;
 #define INTERVAL                1
 #define TIME_FORMAT             "%H:%M:%S"
 #define TIME_BUFFER             10
+#define STAT                    "/proc/stat"
 #define MEM                     "/proc/meminfo"
 #define LOADAVG                 "/proc/loadavg"
 #define BATTERY_PRESENT         "/sys/class/power_supply/BAT0/present"
@@ -141,7 +142,7 @@ string getMem() // {{{
 {
     float total, free, buff, cache;
     FILE *infile = fopen(MEM, "r");
-    fscanf(infile,"MemTotal: %f kB\nMemFree: %f kB\nBuffers: %f kB\nCached: %f kB\n", &total, &free, &buff, &cache);
+    fscanf(infile, "MemTotal: %f kB\nMemFree: %f kB\nBuffers: %f kB\nCached: %f kB\n", &total, &free, &buff, &cache);
     fclose(infile);
     return to_string(lround((total - (free + buff + cache)) / 1024)) + "M";
 }
@@ -159,6 +160,28 @@ string getCpuTemp()
 }
 // }}}
 
+// getCpu {{{
+unsigned long long _totalJiffiesOld, _workJiffiesOld;
+string getCpu()
+{
+    // http://stackoverflow.com/a/3017438
+    unsigned long user, nice, system, idle, iowait, irq, softirq;
+    unsigned long long totalJiffies = 0, workJiffies = 0;
+    FILE *infile = fopen(STAT, "r");
+    // cpu  103789 390 31381 5787014 32373 1 1795
+    fscanf(infile, "cpu  %lu %lu %lu %lu %lu %lu %lu", &user, &nice, &system, &idle, &iowait, &irq, &softirq);
+    fclose(infile);
+    totalJiffies = user + nice + system + idle + iowait + irq + softirq;
+    workJiffies = user + nice + system;
+    
+    float totalOverPeriod = (totalJiffies - _totalJiffiesOld), 
+          workOverPeriod = (workJiffies - _workJiffiesOld);
+    _totalJiffiesOld = totalJiffies;
+    _workJiffiesOld = workJiffies;
+    return to_string(lround(workOverPeriod / totalOverPeriod * 100)) + "%";
+}
+// }}}
+
 int main(int argc, const char *argv[])
 {
     if (!(dpy = XOpenDisplay(NULL))) {
@@ -173,15 +196,15 @@ int main(int argc, const char *argv[])
     c.add(getBattery, 97);
     c.add(getMem, 23);
     c.add(getCpuTemp, 5);
-    // getCpu(1)
+    c.add(getCpu, 1);
     c.add(getTime, 1);
     
     string bat;
     while (true) {
         bat = c.get(getBattery);
         setStatus(c.get(getLoad) + " [" + c.get(getNowPlaying) + "] " + c.get(getUpdates) + " " + 
-                (!bat.empty() ? bat + " " : "") + 
-                c.get(getMem) + " " + c.get(getCpuTemp) + " " + c.get(getTime));
+                (!bat.empty() ? bat + " " : "") + c.get(getMem) + " " + c.get(getCpuTemp) + " " + 
+                c.get(getCpu) + " " + c.get(getTime));
         sleep(INTERVAL);
     }
     
