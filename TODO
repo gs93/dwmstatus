@@ -1,10 +1,6 @@
 valgrind
     valgrind --leak-check=full ./dwmstatus
 
-signalhandling
-    - SIGUSR1: refresh nowplaying
-    - SIGUSR2: refresh updates
-
 informations (information namespace):
     - nowplaying: check for errors
 

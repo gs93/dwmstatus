@@ -4,13 +4,13 @@
 #include <csignal>
 #include <map>
 
-using namespace std;
+typedef void signalfunc_t();
 
 class signalHandler {
 public:
     static signalHandler &getInstance();
-    void addSignal(int sig);
-    bool gotSignal(int sig);
+    void addSignal(int sig, signalfunc_t *function);
+    void callFunction(int sig);
 
 private:
     signalHandler() {}
@@ -19,7 +19,7 @@ private:
     signalHandler &operator=(const signalHandler &) { return *this; }
     static void _sigCatcher(int sig);
 
-    static map<int, bool> _signals;
+    std::map<int, signalfunc_t *> _signals;
 };
 
 #endif

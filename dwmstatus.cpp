@@ -31,6 +31,7 @@ using namespace std;
 //#define UPDATE_NO_SAH         // disable sah integration
 
 static Display *dpy;
+cache c;
 
 // helper {{{1
 vector<string> &_split(const string &s, char delim, vector<string> &elems) // {{{2
@@ -185,6 +186,16 @@ string getCpu()
 }
 // }}}
 
+void sigUsr1()
+{
+    c.refresh(getNowPlaying);
+}
+
+void sigUsr2()
+{
+    c.refresh(getUpdates);
+}
+
 int main(int argc, const char *argv[])
 {
     if (!(dpy = XOpenDisplay(NULL))) {
@@ -193,9 +204,9 @@ int main(int argc, const char *argv[])
     }
     
     signalHandler &sig = signalHandler::getInstance();
-    sig.addSignal(SIGINT);
-
-    cache c;
+    sig.addSignal(SIGUSR1, sigUsr1);
+    sig.addSignal(SIGUSR2, sigUsr2);
+    
     c.add(getLoad, 31);
     c.add(getNowPlaying, 17);
     c.add(getUpdates, 60*60);
@@ -204,9 +215,9 @@ int main(int argc, const char *argv[])
     c.add(getCpuTemp, 5);
     c.add(getCpu, 1);
     c.add(getTime, 1);
-    
+
     string bat;
-    while (!sig.gotSignal(SIGINT)) {
+    while (true) {
         bat = c.get(getBattery);
         setStatus(c.get(getLoad) + " [" + c.get(getNowPlaying) + "] " + c.get(getUpdates) + " " + 
                 (!bat.empty() ? bat + " " : "") + c.get(getMem) + " " + c.get(getCpuTemp) + " " + 

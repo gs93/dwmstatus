@@ -1,34 +1,23 @@
 #include "signalHandler.hpp"
 
-map<int, bool> signalHandler::_signals;
-
 signalHandler &signalHandler::getInstance()
 {
     static signalHandler instance; 
     return instance;
 }
 
-void signalHandler::addSignal(int sig)
+void signalHandler::addSignal(int sig, signalfunc_t *function)
 {
-    _signals.insert(pair<int, bool>(sig, false));
+    _signals.insert(std::pair<int, signalfunc_t *>(sig, function));
     signal((int) sig, _sigCatcher);
 }
 
-bool signalHandler::gotSignal(int sig)
+void signalHandler::callFunction(int sig)
 {
-    auto it = _signals.find(sig);
-    if (it != _signals.end()) {
-        if ((*it).second) {
-            (*it).second = false;
-            return true;
-        }
-        return false;
-    }
-    return false; // XXX: throw exception?
+    ((*(_signals.find(sig))).second)();
 }
 
 void signalHandler::_sigCatcher(int sig)
 {
-    auto it = _signals.find(sig);
-    (*it).second = true;
+    signalHandler::getInstance().callFunction(sig);
 }
