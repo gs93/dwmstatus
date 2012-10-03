@@ -145,7 +145,7 @@ string getMem() // {{{
 {
     float total, free, buff, cache;
     FILE *infile = fopen(MEM, "r");
-    fscanf(infile, "MemTotal: %f kB\nMemFree: %f kB\nBuffers: %f kB\nCached: %f kB\n", &total, &free, &buff, &cache);
+    fscanf(infile, "MemTotal: %9f kB\nMemFree: %9f kB\nBuffers: %9f kB\nCached: %9f kB\n", &total, &free, &buff, &cache);
     fclose(infile);
     return to_string(lround((total - (free + buff + cache)) / 1024)) + "M";
 }
@@ -172,7 +172,7 @@ string getCpu()
     unsigned long long totalJiffies = 0, workJiffies = 0;
     FILE *infile = fopen(STAT, "r");
     // cpu  103789 390 31381 5787014 32373 1 1795
-    fscanf(infile, "cpu  %lu %lu %lu %lu %lu %lu %lu", &user, &nice, &system, &idle, &iowait, &irq, &softirq);
+    fscanf(infile, "cpu  %20lu %20lu %20lu %20lu %20lu %20lu %20lu", &user, &nice, &system, &idle, &iowait, &irq, &softirq);
     fclose(infile);
     totalJiffies = user + nice + system + idle + iowait + irq + softirq;
     workJiffies = user + nice + system;
