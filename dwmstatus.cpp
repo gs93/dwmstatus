@@ -178,7 +178,8 @@ string getCpu()
           workOverPeriod = (workJiffies - _workJiffiesOld);
     _totalJiffiesOld = totalJiffies;
     _workJiffiesOld = workJiffies;
-    return to_string(lround(workOverPeriod / totalOverPeriod * 100)) + "%";
+    long percent = lround(workOverPeriod / totalOverPeriod * 100);
+    return (percent < 10 ? " " : "") + to_string(percent) + "%";
 }
 // }}}
 
