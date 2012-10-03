@@ -117,7 +117,7 @@ string getUpdates() // {{{
         string aur = _getCommandOutput("<$XDG_CACHE_HOME/sah wc -l", true);
         return (_getCommandOutput(UPDATE_COMMAND, true) + (aur != "0" ? "+" + aur : ""));
     #else
-        return (_getCommandOutput(UPDATE_COMMAND, true);
+        return (_getCommandOutput(UPDATE_COMMAND, true));
     #endif
 } // }}}
 
