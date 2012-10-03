@@ -8,8 +8,10 @@
 #include <unistd.h>
 #include <cstdio>
 #include <X11/Xlib.h>
+#include <csignal>
 
 #include "cache.hpp"
+#include "signalHandler.hpp"
 
 using namespace std;
 
@@ -189,6 +191,9 @@ int main(int argc, const char *argv[])
         cerr << "dwmstatus: cannot open display." << endl;
         return 1;
     }
+    
+    signalHandler &sig = signalHandler::getInstance();
+    sig.addSignal(SIGINT);
 
     cache c;
     c.add(getLoad, 31);
@@ -201,14 +206,14 @@ int main(int argc, const char *argv[])
     c.add(getTime, 1);
     
     string bat;
-    while (true) {
+    while (!sig.gotSignal(SIGINT)) {
         bat = c.get(getBattery);
         setStatus(c.get(getLoad) + " [" + c.get(getNowPlaying) + "] " + c.get(getUpdates) + " " + 
                 (!bat.empty() ? bat + " " : "") + c.get(getMem) + " " + c.get(getCpuTemp) + " " + 
                 c.get(getCpu) + " " + c.get(getTime));
         sleep(INTERVAL);
     }
-    
+    setStatus("dwm");
     XCloseDisplay(dpy);
     return 0;
 }
