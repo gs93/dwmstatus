@@ -25,7 +25,7 @@ using namespace std;
 #define BATTERY_STATUS          "/sys/class/power_supply/BAT0/status"
 #define BATTERY_NOW             "/sys/class/power_supply/BAT0/charge_now"
 #define BATTERY_FULL            "/sys/class/power_supply/BAT0/charge_full"
-#define NOWPLAYING_COMMAND      "mpc -f %title% current"
+#define NOWPLAYING_COMMAND      "mpc -f %title% current 2>&1"
 #define NOWPLAYING_MAX_LENGTH   20
 #define UPDATE_COMMAND          "pacman -Qqu | wc -l"
 //#define UPDATE_NO_SAH         // disable sah integration
