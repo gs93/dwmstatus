@@ -11,7 +11,6 @@
 #include <csignal>
 
 #include "cache.hpp"
-#include "signalHandler.hpp"
 
 using namespace std;
 
@@ -186,14 +185,18 @@ string getCpu()
 }
 // }}}
 
-void sigUsr1()
+void signals(int param)
 {
-    c.refresh(getNowPlaying);
-}
-
-void sigUsr2()
-{
-    c.refresh(getUpdates);
+    switch(param) {
+    case SIGUSR1:
+        c.refresh(getNowPlaying);
+        break;
+    case SIGUSR2:
+        c.refresh(getUpdates);
+        break;
+    default:
+        cerr << "catched unhandled signal: " << param << endl;
+    }
 }
 
 int main()
@@ -203,9 +206,8 @@ int main()
         return 1;
     }
     
-    signalHandler &sig = signalHandler::getInstance();
-    sig.addSignal(SIGUSR1, sigUsr1);
-    sig.addSignal(SIGUSR2, sigUsr2);
+    signal(SIGUSR1, signals);
+    signal(SIGUSR2, signals);
     
     c.add(getLoad, 31);
     c.add(getNowPlaying, 17);
