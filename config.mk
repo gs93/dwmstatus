@@ -14,7 +14,7 @@ LIBS = -L/usr/lib -lc -L${X11LIB} -lX11
 
 # flags
 CPPFLAGS = -DVERSION=\"${VERSION}\"
-CXXFLAGS = -g -std=c++11 -pedantic -Wall -O3 ${INCS} ${CPPFLAGS}
+CXXFLAGS = -g -std=c++11 -pedantic -Wall -Wextra -Weffc++ -O3 ${INCS} ${CPPFLAGS}
 LDFLAGS = -g ${LIBS}
 
 # compiler and linker
