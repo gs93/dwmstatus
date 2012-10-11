@@ -4,25 +4,36 @@
 #include <string>
 #include <map>
 
-using namespace std;
-
-typedef string statusfunc_t();
+typedef std::string statusfunc_t();
 
 class cache {
 public:
     cache();
+    cache(const cache&);
+    cache &operator=(const cache&);
+    virtual ~cache();
     void add(statusfunc_t *function, unsigned int calls);
-    string get(statusfunc_t *function, bool forceCall = false);
+    std::string get(statusfunc_t *function, bool forceCall = false);
     void refresh(statusfunc_t *function);
     bool remove(statusfunc_t *function);
-    virtual ~cache();
 
 private:
-    struct _cacheFunction_t {
+    class _cacheFunction_t {
+    public:
+        _cacheFunction_t(unsigned int c) : calls(c), lastCall(0), returnValue("") {}
+        unsigned int getCalls() { return calls; }
+        unsigned int getLastCall() { return lastCall; }
+        void setLastCall(unsigned int c) { lastCall = c;}
+        void incrementLastCall() { setLastCall(lastCall + 1); }
+        std::string getReturnValue() { return returnValue; }
+        void setReturnValue(std::string ret) { returnValue = ret; }
+
+    private:
         unsigned int calls;
         unsigned int lastCall;
-        string returnValue;
+        std::string returnValue;
     };
-    map<statusfunc_t *, _cacheFunction_t> _functions;
+
+    std::map<statusfunc_t *, _cacheFunction_t> *_functions;
 };
 #endif
