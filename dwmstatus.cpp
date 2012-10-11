@@ -196,7 +196,7 @@ void sigUsr2()
     c.refresh(getUpdates);
 }
 
-int main(int argc, const char *argv[])
+int main()
 {
     if (!(dpy = XOpenDisplay(NULL))) {
         cerr << "dwmstatus: cannot open display." << endl;
