@@ -131,7 +131,7 @@ string getUpdates() // {{{
 {
     #ifndef UPDATE_NO_SAH
         string aur = _getCommandOutput("<$XDG_CACHE_HOME/sah wc -l", true);
-        return (_getCommandOutput(UPDATE_COMMAND, true) + (aur != "0" ? "+" + aur : ""));
+        return (_getCommandOutput(UPDATE_COMMAND, true) + "+" + aur);
     #else
         return (_getCommandOutput(UPDATE_COMMAND, true));
     #endif
