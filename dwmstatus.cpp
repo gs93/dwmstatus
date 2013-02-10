@@ -130,7 +130,7 @@ string getNowPlaying() // {{{
 string getUpdates() // {{{
 {
     #ifndef UPDATE_NO_SAH
-        string aur = _getCommandOutput("<$XDG_CACHE_HOME/sah wc -l", true);
+        string aur = _getCommandOutput("<${XDG_CACHE_HOME:-~/.cache}/sah wc -l", true);
         return (_getCommandOutput(UPDATE_COMMAND, true) + "+" + aur);
     #else
         return (_getCommandOutput(UPDATE_COMMAND, true));
