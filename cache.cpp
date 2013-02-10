@@ -21,29 +21,18 @@ cache::cache() : _functions (new std::map<statusfunc_t *, _cacheFunction_t>)
 {
 }
 
-cache::cache(const cache&) : _functions (new std::map<statusfunc_t *, _cacheFunction_t>)
-{
-    // TODO
-}
-
-cache &cache::operator=(const cache &)
-{
-    // TODO
-    return *this;
-}
-
 cache::~cache()
 {
     delete _functions;
 }
 
-void cache::add(statusfunc_t *function, unsigned int calls)
+void cache::add(const statusfunc_t *function, unsigned int calls)
 {
     _cacheFunction_t tmp(calls);
-    _functions->insert(std::pair<statusfunc_t *, _cacheFunction_t>(function, tmp));
+    _functions->insert(std::pair<const statusfunc_t *, _cacheFunction_t>(function, tmp));
 }
 
-std::string cache::get(statusfunc_t *function, bool forceCall)
+std::string cache::get(const statusfunc_t *function, bool forceCall)
 {
     auto it = _functions->find(function);
     _cacheFunction_t *tmp = &((*it).second);
@@ -55,13 +44,13 @@ std::string cache::get(statusfunc_t *function, bool forceCall)
     return tmp->getReturnValue();
 }
 
-void cache::refresh(statusfunc_t *function)
+void cache::refresh(const statusfunc_t *function)
 {
     auto it = _functions->find(function);
     (*it).second.setLastCall(0);
 }
 
-bool cache::remove(statusfunc_t *function)
+bool cache::remove(const statusfunc_t *function)
 {
     auto it = _functions->find(function);
     if (it != _functions->end()) {

@@ -26,24 +26,22 @@ typedef std::string statusfunc_t();
 class cache {
 public:
     cache();
-    cache(const cache&);
-    cache &operator=(const cache&);
-    virtual ~cache();
-    void add(statusfunc_t *function, unsigned int calls);
-    std::string get(statusfunc_t *function, bool forceCall = false);
-    void refresh(statusfunc_t *function);
-    bool remove(statusfunc_t *function);
+    ~cache();
+    void add(const statusfunc_t *function, unsigned int calls);
+    std::string get(const statusfunc_t *function, bool forceCall = false);
+    void refresh(const statusfunc_t *function);
+    bool remove(const statusfunc_t *function);
 
 private:
     class _cacheFunction_t {
     public:
         _cacheFunction_t(unsigned int c) : calls(c), lastCall(0), returnValue("") {}
-        unsigned int getCalls() { return calls; }
-        unsigned int getLastCall() { return lastCall; }
-        void setLastCall(unsigned int c) { lastCall = c;}
+        unsigned int getCalls() const { return calls; }
+        unsigned int getLastCall() const { return lastCall; }
+        void setLastCall(unsigned int c) { lastCall = c; }
         void incrementLastCall() { setLastCall(lastCall + 1); }
-        std::string getReturnValue() { return returnValue; }
-        void setReturnValue(std::string ret) { returnValue = ret; }
+        std::string getReturnValue() const { return returnValue; }
+        void setReturnValue(const std::string &ret) { returnValue = ret; }
 
     private:
         unsigned int calls;
@@ -51,6 +49,9 @@ private:
         std::string returnValue;
     };
 
-    std::map<statusfunc_t *, _cacheFunction_t> *_functions;
+    std::map<const statusfunc_t *, _cacheFunction_t> *_functions;
+
+    cache(const cache &);
+    cache &operator=(const cache &);
 };
 #endif
