@@ -46,26 +46,21 @@ using namespace std;
 #define UPDATE_COMMAND          "pacman -Qqu | wc -l"
 //#define UPDATE_NO_SAH         // disable sah integration
 
-static Display *dpy;
+Display *dpy;
 cache c;
 
 // helper {{{1
-vector<string> &_split(const string &s, char delim, vector<string> &elems) // {{{2
+vector<string> _split(const string &s, char delim = ' ') // {{{2
 {
+    vector<string> ret;
     stringstream ss(s);
     string item;
     while(getline(ss, item, delim))
-        elems.push_back(item);
-    return elems;
+        ret.push_back(item);
+    return ret;
 } // 2}}}
 
-vector<string> _split(const string &s, char delim = ' ')
-{
-    vector<string> elems;
-    return _split(s, delim, elems);
-}
-
-string _getFileContent(string path)
+string _getFileContent(const string &path)
 {
     ifstream t(path.c_str());
     string str((istreambuf_iterator<char>(t)),
@@ -74,7 +69,7 @@ string _getFileContent(string path)
     return str;
 }
 
-string _getCommandOutput(string cmd, bool removeLastChar = false) // {{{2
+string _getCommandOutput(const string &cmd, bool removeLastChar = false) // {{{2
 {
     FILE *in;
     char buff[512];
